@@ -19,19 +19,13 @@ To write a YACC program to recognize the grammar anb where n>=10.
 ```
 %{
 #include "y.tab.h"
-#include <stdio.h>
 %}
 
-/* Rule Section */
 %%
-
-[aA] { return A; }
-[bB] { return B; }
-\n { return NL; }
-. { /* Ignore any other characters */ }
-
+a    { return A; }  // Recognize 'a' as token A
+b    { return B; }  // Recognize 'b' as token B
+.    { return 0; }  // End of input
 %%
-
 
 int yywrap() {
     return 1;
@@ -41,34 +35,30 @@ int yywrap() {
 ```
 %{
 #include <stdio.h>
-#include <stdlib.h>
-
-void yyerror(char *s);
 int yylex(void);
+void yyerror(const char *s);
 %}
 
-%token A B NL
+%token A B
 
-%% 
+%%
+S   : A A A A A A A A A A B    { printf("Valid string\n"); }
+    | A S B                    { printf("Valid string\n"); }
+    ;
 
-stmt: S NL { printf("Valid string\n"); exit(0); }
-;
-
-S: A S B | /* Allow for empty production */
-  
-;
-
-%% 
-
-void yyerror(char *s) {
-    fprintf(stderr, "Invalid string\n");
-}
+%%
 
 int main() {
-    printf("Enter the string:");
+    printf("Enter a string:\n");
     yyparse();
     return 0;
 }
+
+void yyerror(const char *s) {
+    printf("Invalid string\n");
+}
+
+
 ```
 # OUTPUT
 ![image](https://github.com/user-attachments/assets/909a2437-f783-471f-b072-444ac57b6081)
